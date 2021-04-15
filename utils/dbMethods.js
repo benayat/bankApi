@@ -1,39 +1,77 @@
 const path = require('path');
 const fs = require('fs');
-const uniquid = require('uniqid');
-const pathDB = path.join(__dirname, '../db/movies.json');
+const pathDB = path.join(__dirname, '../db/clients.json');
 
-const getAllMoviesFile = () => {
+const getAllClients = () => {
   const rawData = fs.readFileSync(pathDB);
   return JSON.parse(rawData);
 };
-const createMovie = (title, genre, length) => {
-  const id = uniquid();
-  return updateMovie(id, title, genre, length);
+const getClient = (id) => {
+  const clients = getAllClients();
+  return clients.find((client) => client.id === id);
 };
-const updateMovie = (id, title, genre, length) => {
-  const movie = { id, title, genre, length };
-  console.log(movie);
-  const movies = getAllMoviesFile();
-
-  const indexToUpdate = movies.findIndex((movie) => movie.id === id);
-  if (indexToUpdate === -1)
+const createClient = (id) => {
+  return updateClient(id, 0, 0, 'post');
+};
+const updateClient = (id, cash, credit, method) => {
+  const client = { id, cash, credit };
+  console.log(client);
+  const clients = getAllClients();
+  const indexToUpdate = clients.findIndex((client) => client.id === id);
+  if (indexToUpdate === -1 && method !== 'post') {
     throw Error('the item you want to update is not there!');
-  movies[indexToUpdate] = movie;
-  fs.writeFileSync(pathDB, JSON.stringify(movies));
-  return movie;
+  } else if (indexToUpdate === -1) {
+    console.log('no index, push');
+    clients.push(client);
+  } else if (indexToUpdate !== -1 && method === 'post') {
+    throw Error('client already exists!');
+  } else {
+    console.log('found the client');
+    console.log(client);
+    clients[indexToUpdate] = client;
+  }
+  fs.writeFileSync(pathDB, JSON.stringify(clients));
+  return client;
 };
-const deleteMovie = (id) => {
-  const movies = getAllMoviesFile();
-  const indexToDelete = movies.findIndex((movie) => movie.id === id);
-  if (indexToDelete === -1) throw Error("movie doesn't exist in the database");
-  const result = movies.splice(indexToDelete, 1);
+const updateCredit = (id, credit) => {
+  const client = getClient(id);
+  return updateClient(id, client.cash, credit, 'put');
+};
+const withdraw = (id, cash) => {
+  const client = getClient(id);
+  cash = parseFloat(cash);
+  if (cash > client.cash + client.credit) {
+    throw Error("can't withdraw, not enough cash");
+  } else {
+    client.cash -= cash;
+  }
+  return updateClient(id, client.cash, client.credit, 'put');
+};
+const deposit = (id, cash) => {
+  const client = getClient(id);
+  cash = parseFloat(cash);
+  return updateClient(id, client.cash + cash, client.credit, 'put');
+};
+//returns client2 if all is ok.
+const transfer = (idFrom, idTo, cash) => {
+  const res1 = withdraw(idFrom, cash);
+  const res2 = deposit(idTo, cash);
+  return res1 && res2;
+};
+const deleteClient = (id) => {
+  const clients = getAllClients();
+  const indexToDelete = clients.findIndex((client) => client.id === id);
+  if (indexToDelete === -1) throw Error("client doesn't exist in the database");
+  const result = clients.splice(indexToDelete, 1);
   if (result === []) console.log('error delete');
-  fs.writeFileSync(pathDB, JSON.stringify(movies));
+  fs.writeFileSync(pathDB, JSON.stringify(clients));
 };
 module.exports = {
-  getAllMoviesFile,
-  createMovie,
-  updateMovie,
-  deleteMovie,
+  getAllClients,
+  createClient,
+  updateCredit,
+  withdraw,
+  deposit,
+  transfer,
+  deleteClient,
 };
