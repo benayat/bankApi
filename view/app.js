@@ -7,7 +7,7 @@ const {
   transfer,
   updateCredit,
   deleteClient,
-} = require('../utils/dbMethods');
+} = require('../controller/dbMethods');
 
 const port = 3000;
 

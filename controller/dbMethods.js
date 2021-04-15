@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const pathDB = path.join(__dirname, '../db/clients.json');
+const pathDB = path.join(__dirname, '../model/clients.json');
 
 const getAllClients = () => {
   const rawData = fs.readFileSync(pathDB);
