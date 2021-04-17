@@ -38,12 +38,14 @@ const updateClientHelper = (id, cash, credit, method) => {
 };
 const updateCreditHelper = (id, credit) => {
   const client = getClientHelper(id);
+  if (client.cash < 0 && Math.abs(client.cash) > credit)
+    throw Error('credit is smaller the minus. pay-off the debt first');
   return updateClientHelper(id, client.cash, credit, 'put');
 };
 const withdrawHelper = (id, cash) => {
   const client = getClientHelper(id);
   cash = parseFloat(cash);
-  if (cash > client.cash + client.credit) {
+  if (cash > parseFloat(client.cash) + parseFloat(client.credit)) {
     throw Error("can't withdraw, not enough cash");
   } else {
     client.cash -= cash;

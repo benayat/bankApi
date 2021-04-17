@@ -37,6 +37,7 @@ const putHandler = (req, res) => {
   try {
     switch (type) {
       case 'deposit': {
+        console.log('deposit funds');
         const client = depositHelper(id, req.query.cash);
         res.status(201).send(client);
         break;
