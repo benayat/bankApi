@@ -1,7 +1,6 @@
 const {
   createClientHelper,
   getAllClientsHelper,
-  updateClientHelper,
   updateCreditHelper,
   withdrawHelper,
   depositHelper,
@@ -57,6 +56,7 @@ const putHandler = (req, res) => {
       }
       case 'updatecredit': {
         const client = updateCreditHelper(id, req.query.credit);
+        console.log(client);
         res.status(201).send(client);
         break;
       }

@@ -19,7 +19,6 @@ const getClientHelper = (id) => {
 
 const updateClientHelper = (id, cash, credit, method) => {
   const client = { id, cash, credit };
-  console.log(client);
   const clients = getAllClientsHelper();
   const indexToUpdate = clients.findIndex((client) => client.id === id);
   if (indexToUpdate === -1 && method !== 'post') {
@@ -73,7 +72,6 @@ const deleteClientHelper = (id) => {
 module.exports = {
   createClientHelper,
   getAllClientsHelper,
-  updateClientHelper,
   updateCreditHelper,
   withdrawHelper,
   depositHelper,
